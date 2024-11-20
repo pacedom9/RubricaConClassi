@@ -14,8 +14,7 @@ public static class Rubrica
         using (var reader = new StreamReader(percorsoFile))
         using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HeaderValidated = null, MissingFieldFound = null, HasHeaderRecord = false}))
 
-        {
-            var a = csv.GetRecords<Contatto>();
+        { 
             contatti = csv.GetRecords<Contatto>().ToList();
 
         }
