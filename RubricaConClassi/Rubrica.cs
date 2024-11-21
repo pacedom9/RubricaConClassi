@@ -1,8 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
-using CsvHelper.Configuration.Attributes;
 using System.Globalization;
-using System.Linq;
+
 
 namespace RubricaConClassi;
 
@@ -35,20 +34,18 @@ public static class Rubrica
     }
     public static void AggiungiContatto()
     {
-        
-
         Console.WriteLine("Inserisci nome:");
-        string? nome = Console.ReadLine();
+        string? nome = Console.ReadLine() ?? "undefined";
         Console.WriteLine("Inserisci cognome:");
-        string? cognome = Console.ReadLine();
+        string? cognome = Console.ReadLine() ?? "undefined";
         Console.WriteLine("Inserisci email:");
-        string? email = Console.ReadLine();
+        string? email = Console.ReadLine() ?? "undefined";
         Console.WriteLine("Inserisci telefono:");
-        string? telefono = Console.ReadLine();
-
+        string? telefono = Console.ReadLine() ?? "undefined";
+        
         foreach (var riga in contatti)
         {
-            if (riga.GetEmail() == email)
+            if (riga.Email == email)
             {
                 Console.WriteLine("Contatto già esistente!");
                 return;
@@ -57,7 +54,6 @@ public static class Rubrica
 
         Contatto nuovoContatto = new Contatto(nome, cognome, email, telefono);
         contatti.Add(nuovoContatto);
-
         SalvaRubrica(contatti);
 
         Console.WriteLine("Contatto aggiunto con successo!");
@@ -72,7 +68,7 @@ public static class Rubrica
 
         foreach (var riga in contattiEsistenti)
         {
-            if (riga.GetEmail() == ricercaEmail)
+            if (riga.Email == ricercaEmail)
             {
                 emailTrovata = true;
                 Console.Write("Inserisci nuovo nome: ");
@@ -114,7 +110,7 @@ public static class Rubrica
 
         foreach (var riga in contattiEsistenti)
         {
-            if (riga.GetEmail() == ricercaEmail)
+            if (riga.Email == ricercaEmail)
             {
                 contattiEsistenti.Remove(riga);
 
@@ -132,7 +128,7 @@ public static class Rubrica
     {        
         Console.WriteLine("Sei sicuro di voler eliminare la rubrica? (s/n)");
         string? EliminazioneRubrica = Console.ReadLine();
-        if (EliminazioneRubrica.ToLower() == "s")
+        if (EliminazioneRubrica?.ToLower() == "s")
         {
             Console.WriteLine("\nRubrica eliminata correttamente");
             contatti.Clear();
@@ -219,3 +215,4 @@ public static class Rubrica
     }
 }
 
+    
