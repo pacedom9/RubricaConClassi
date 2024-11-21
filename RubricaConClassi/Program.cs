@@ -11,11 +11,12 @@ while (true)
     Console.WriteLine("4 - Elimina rubrica");
     Console.WriteLine("5 - Esporta rubrica");
     Console.WriteLine("6 - Importa rubrica");
-    Console.WriteLine("7 - Visualizza contatti\n");
+    Console.WriteLine("7 - Visualizza contatti");
+    Console.WriteLine("8 - Esci dalla rubrica");
     string? sceltaString = Console.ReadLine();
     int sceltaInt;
     int.TryParse(sceltaString, out sceltaInt);
-    while (sceltaInt > 7 || sceltaInt < 1)
+    while (sceltaInt > 8 || sceltaInt < 1)
     {
         sceltaString = Console.ReadLine();
         int.TryParse(sceltaString, out sceltaInt);
@@ -43,6 +44,8 @@ while (true)
         case 7:
             VisualizzaContatti();
             break;
+        case 8:
+            return;
     }
 }
 

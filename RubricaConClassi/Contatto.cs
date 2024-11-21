@@ -22,11 +22,6 @@ public class Contatto
         Telefono = telefono;
     }
 
-    public string Get()
-    {
-        return $"{Nome}, {Cognome}, {Email}, {Telefono}";
-    }
-
     public string GetEmail()
     {
         return $"{Email}";

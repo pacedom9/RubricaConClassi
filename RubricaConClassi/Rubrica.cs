@@ -1,6 +1,8 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using CsvHelper.Configuration.Attributes;
 using System.Globalization;
+using System.Linq;
 
 namespace RubricaConClassi;
 
@@ -23,7 +25,7 @@ public static class Rubrica
     }
     public static void SalvaRubrica(List<Contatto> contatti)
     {
-        using (var writer = new StreamWriter(percorsoFile))
+        using (var writer = new StreamWriter(percorsoFile, append: false))
         using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
         {
             csv.WriteRecords(contatti);
@@ -133,25 +135,71 @@ public static class Rubrica
         if (EliminazioneRubrica.ToLower() == "s")
         {
             Console.WriteLine("\nRubrica eliminata correttamente");
-            File.Delete(percorsoFile);
+            contatti.Clear();
+            SalvaRubrica(contatti);
 
         }
         else
         {
-            Console.WriteLine("Operazione annullata");
+            Console.WriteLine("Risposta non valida. Operazione annullata");
         }
     }
     public static void EsportaRubrica()
-    {        
-        string copyPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Desktop\";
-        Console.WriteLine("Inserisci nome nuovo registro");
-        var fileCopy = Console.ReadLine();
-        File.Copy(percorsoFile, copyPath + fileCopy + ".csv");
+    {
+        string ricercaFileDaEsportare = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        Console.WriteLine("Inserisci nome del nuovo file");
+        string? nomeRegistro = Console.ReadLine() + ".csv";
+        string fileEsportato = Path.Combine(ricercaFileDaEsportare, nomeRegistro);
+        
+        using (var writer = new StreamWriter(fileEsportato, append: false)) 
+        using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = true }))
+        {
+            csv.WriteRecords(contatti);
+        }
 
+        Console.WriteLine($"Rubrica esportata in {fileEsportato}");
     }
     public static void ImportaRubrica()
     {
+        Console.WriteLine("Inserisci nome della rubrica da importare");
+        string ricercaFileDaImportare = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\" + Console.ReadLine() + ".csv";
 
+        if (File.Exists(ricercaFileDaImportare))
+        {
+            List<Contatto> nuoviContatti;
+            using (var reader = new StreamReader(ricercaFileDaImportare))
+            using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { HeaderValidated = null, MissingFieldFound = null, HasHeaderRecord = false }))
+
+            {
+                nuoviContatti = csv.GetRecords<Contatto>().ToList();
+
+            }
+            foreach (var contattoImportato in nuoviContatti)
+            {
+
+                var contattoEsistente = contatti.FirstOrDefault(c => c.Email == contattoImportato.Email);
+                if (contattoEsistente != null)
+                {
+                    Console.WriteLine($"Contatto duplicato trovato: {contattoEsistente.Nome} {contattoEsistente.Cognome}. Vuoi mantenere (1) il contatto esistente o (2) il nuovo contatto? (1/2)");
+                    string scelta = Console.ReadLine() ?? "";
+                    if (scelta == "2")
+                    {
+                        contatti.Remove(contattoEsistente);
+                        contatti.Add(contattoImportato);
+                    }
+                }
+                else
+                {
+                    contatti.Add(contattoImportato);
+                }
+
+                
+                SalvaRubrica(contatti);
+                
+
+            }
+            Console.WriteLine("Rubrica importata con successo! (forse)");
+        }
     }
     public static void VisualizzaContatti()
     {
